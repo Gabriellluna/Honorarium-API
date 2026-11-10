@@ -1,0 +1,8 @@
+# Valores SÓ para desenvolvimento local. Produção usa variáveis de ambiente.
+jwt:
+  secret: dev-only-secret-change-me-0123456789abcdef-NOT-FOR-PRODUCTION
+
+app:
+  dev-seed:
+    email: dev@honorarios.local
+    password: dev12345
