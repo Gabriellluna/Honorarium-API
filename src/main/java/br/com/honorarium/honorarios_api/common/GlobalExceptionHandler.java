@@ -19,6 +19,13 @@ public class GlobalExceptionHandler {
         return pd;
     }
 
+    @ExceptionHandler({NenhumClienteException.class})
+    ProblemDetail nenhumCliente(RuntimeException ex) {
+        ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
+        pd.setTitle("Não encontrado");
+        return pd;
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     ProblemDetail validacao(MethodArgumentNotValidException ex) {
         Map<String, String> campos = new LinkedHashMap<>();

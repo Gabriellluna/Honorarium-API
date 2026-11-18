@@ -40,7 +40,7 @@ create table clientes (
   id               uuid          primary key default gen_random_uuid(),
   usuario_id       uuid          not null references usuarios(id) on delete cascade,
   razao_social     text          not null,
-  document         varchar(18)   not null,
+  document         varchar(14)   not null,
   valor_honorario  numeric(10,2) not null check (valor_honorario > 0),
   dia_vencimento   smallint      not null check (dia_vencimento between 1 and 31),
   ativo            boolean       not null default true,
