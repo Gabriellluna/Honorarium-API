@@ -1,18 +1,3 @@
--- =====================================================================
--- V1__baseline.sql  (Flyway)
--- Schema adaptado do Supabase para Postgres puro + Spring Boot.
---
--- Diferenças em relação ao Supabase (todas deliberadas):
---  * auth.users + perfis  -> tabela única "usuarios" (com senha_hash)
---  * enum status_pagamento -> text + CHECK (evita dor de cabeça no Hibernate;
---    no Java continua sendo um enum com @Enumerated(EnumType.STRING))
---  * pagamentos_clientes.cliente_id removido (era redundante: o dono vem de
---    pagamento -> cliente; o levantamento mostrou 0 inconsistências)
---  * triggers e views NÃO migram: a lógica passa para os services Java
---  * RLS NÃO existe aqui: a autorização é feita na aplicação (ownership)
---  * uuid_generate_v4() -> gen_random_uuid() (nativo, sem extensão)
--- =====================================================================
-
 -- ---------- usuarios (substitui auth.users + perfis) -----------------
 create table usuarios (
   id          uuid        primary key default gen_random_uuid(),
@@ -23,7 +8,7 @@ create table usuarios (
 );
 
 -- ---------- tabelas de apoio (seeds entram em V3 com os dados reais) --
-create table tipo_pagamento (
+create table tipo_servico (
   id         smallint primary key,
   nome       text     not null,
   descricao  text
@@ -31,8 +16,7 @@ create table tipo_pagamento (
 
 create table forma_pagamento (
   id     smallint primary key,
-  nome   text     not null,
-  icone  text
+  nome   text     not null
 );
 
 -- ---------- clientes -------------------------------------------------
@@ -66,11 +50,11 @@ create index idx_clientes_razao_social
 create unique index idx_clientes_usuario_document_ativo
   on clientes (usuario_id, document) where ativo = true;
 
--- ---------- pagamentos (cobranças) -----------------------------------
-create table pagamentos (
+-- ---------- servicos (cobranças) -----------------------------------
+create table servicos (
   id               uuid          primary key default gen_random_uuid(),
   cliente_id       uuid          not null references clientes(id) on delete cascade,
-  type             smallint      not null default 1 references tipo_pagamento(id),
+  type             smallint      not null default 1 references tipo_servico(id),
   competencia_mes  smallint      not null check (competencia_mes between 1 and 12),
   competencia_ano  smallint      not null check (competencia_ano between 2000 and 2100),
   valor_cobrado    numeric(10,2) not null check (valor_cobrado > 0),
@@ -83,20 +67,20 @@ create table pagamentos (
   updated_at       timestamptz   not null default now()
 );
 
-create index idx_pagamentos_cliente_id  on pagamentos (cliente_id);
-create index idx_pagamentos_type        on pagamentos (type);
-create index idx_pagamentos_status      on pagamentos (status);
-create index idx_pagamentos_competencia on pagamentos (competencia_ano, competencia_mes);
+create index idx_servicos_cliente_id  on servicos (cliente_id);
+create index idx_servicos_type        on servicos (type);
+create index idx_servicos_status      on servicos (status);
+create index idx_servicos_competencia on servicos (competencia_ano, competencia_mes);
 
 -- Só UMA cobrança de honorário (type = 1) por cliente/competência.
 -- Serviços avulsos (type = 2) podem repetir: os dados reais já têm isso.
-create unique index idx_pagamentos_honorario_unico
-  on pagamentos (cliente_id, competencia_mes, competencia_ano) where type = 1;
+create unique index idx_servicos_honorario_unico
+  on servicos (cliente_id, competencia_mes, competencia_ano) where type = 1;
 
--- ---------- pagamentos_clientes (recebimentos) -----------------------
-create table pagamentos_clientes (
+-- ---------- pagamentos (recebimentos) -----------------------
+create table pagamentos (
   id              uuid          primary key default gen_random_uuid(),
-  pagamento_id    uuid          not null references pagamentos(id) on delete cascade,
+  servico_id    uuid          not null references servicos(id) on delete cascade,
   valor           numeric(10,2) not null check (valor > 0),
   data_pagamento  date          not null default current_date,
   forma_id        smallint      not null references forma_pagamento(id),
@@ -104,5 +88,5 @@ create table pagamentos_clientes (
   created_at      timestamptz   not null default now()
 );
 
-create index idx_pc_pagamento_id on pagamentos_clientes (pagamento_id);
-create index idx_pc_data         on pagamentos_clientes (data_pagamento);
+create index idx_pc_pagamento_id on pagamentos (servico_id);
+create index idx_pc_data         on pagamentos (data_pagamento);
