@@ -57,9 +57,8 @@ create table servicos (
   type             smallint      not null default 1 references tipo_servico(id),
   competencia_mes  smallint      not null check (competencia_mes between 1 and 12),
   competencia_ano  smallint      not null check (competencia_ano between 2000 and 2100),
-  valor_cobrado    numeric(10,2) not null check (valor_cobrado > 0),
+  valor_cobrado    numeric(12,2) not null check (valor_cobrado > 0),
   data_vencimento  date          not null,
-  data_pagamento   date,
   status           text          not null default 'pendente'
                                  check (status in ('pendente','pago','atrasado')),
   observacao       text,

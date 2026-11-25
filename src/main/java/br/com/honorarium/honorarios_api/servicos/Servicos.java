@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -29,14 +30,11 @@ public class Servicos {
     @Column(name = "competencia_ano", nullable = false)
     private Short compAno;
 
-    @Column(name = "valor_cobrado", nullable = false)
-    private Double valorCobrado;
+    @Column(name = "valor_cobrado", precision = 12, scale = 2, nullable = false)
+    private BigDecimal valorCobrado;
 
     @Column(name = "data_vencimento", nullable = false)
-    private LocalDateTime dataVencimento;
-
-    @Column(name = "data_pagamento", nullable = false)
-    private LocalDateTime dataPagamento;
+    private LocalDate dataVencimento;
 
     @Column(name = "status", nullable = false)
     private String status;
@@ -68,16 +66,12 @@ public class Servicos {
         return compAno;
     }
 
-    public Double getValorCobrado() {
+    public BigDecimal getValorCobrado() {
         return valorCobrado;
     }
 
-    public LocalDateTime getDataVencimento() {
+    public LocalDate getDataVencimento() {
         return dataVencimento;
-    }
-
-    public LocalDateTime getDataPagamento() {
-        return dataPagamento;
     }
 
     public String getStatus() {
