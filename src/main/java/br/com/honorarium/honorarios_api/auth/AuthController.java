@@ -1,7 +1,5 @@
 package br.com.honorarium.honorarios_api.auth;
 
-import br.com.honorarium.honorarios_api.cliente.Cliente;
-import br.com.honorarium.honorarios_api.cliente.ClienteService;
 import jakarta.validation.Valid;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;

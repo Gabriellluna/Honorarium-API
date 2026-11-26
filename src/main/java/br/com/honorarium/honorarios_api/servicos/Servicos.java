@@ -1,5 +1,6 @@
 package br.com.honorarium.honorarios_api.servicos;
 
+import br.com.honorarium.honorarios_api.cliente.Cliente;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -18,8 +19,9 @@ public class Servicos {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private UUID id;
 
-    @Column(name = "cliente_id", nullable = false, unique = false)
-    private UUID clienteId;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "cliente_id")
+    private Cliente cliente;
 
     @Column(name = "type", nullable = false, unique = false)
     private Short tipo;
@@ -46,12 +48,16 @@ public class Servicos {
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
+    @UpdateTimestamp
+    @Column(name = "updated_at", nullable = false, updatable = true)
+    private Instant updatedAt;
+
     public UUID getId() {
         return id;
     }
 
-    public UUID getClienteId() {
-        return clienteId;
+    public Cliente getCliente() {
+        return cliente;
     }
 
     public Short getTipo() {
@@ -89,9 +95,4 @@ public class Servicos {
     public Instant getUpdatedAt() {
         return updatedAt;
     }
-
-    @UpdateTimestamp
-    @Column(name = "updated_at", nullable = false, updatable = true)
-    private Instant updatedAt;
-
 }

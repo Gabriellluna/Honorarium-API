@@ -15,8 +15,8 @@ public class ServicosService {
         this.servicosRepository = servicosRepository;
     }
 
-    public void buscaServicosPorCliente(UUID clienteId){
-        List<Servicos> servicos  = servicosRepository.findByClienteId(clienteId);
+    public void buscaServicosPorCliente(UUID usuarioId){
+        Optional<Servicos> servicos  = servicosRepository.findByClienteUsuarioId(usuarioId);
         System.out.println("servicos: " + servicos);
     }
 

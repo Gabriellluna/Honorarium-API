@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface ServicosRepository extends JpaRepository<UUID, Servicos> {
+public interface ServicosRepository extends JpaRepository<Servicos, UUID> {
 
-    List<Servicos> findByClienteId(UUID clienteId);
+    Optional<Servicos> findByClienteUsuarioId(UUID usuarioId);
 
 }
